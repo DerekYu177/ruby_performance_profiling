@@ -2,7 +2,7 @@ import subprocess
 import os
 
 FILES = {
-    'cruby': 'ruby.versions'
+    'cruby': 'ruby.versions',
     'jruby': 'jruby.versions',
 }
 
@@ -13,8 +13,7 @@ for interpreter, file_name in FILES.items():
     with open(file_name, 'r') as f:
         versions = f.read()
 
-    versions.strip('\n').split('\n')
-    all_versions.update({interpreter: versions})
+    all_versions.update({interpreter: versions.strip('\n').split('\n')})
 
 def command(interpreter_type):
     if interpreter_type == 'cruby':
@@ -24,7 +23,7 @@ def command(interpreter_type):
 
 def install_all_uninstalled_versions():
     output = subprocess.run('rvm list strings', capture_output=True, shell=True)
-    installed_versions = set(output.strip('\n').split('\n'))
+    installed_versions = set(output.stdout.decode('utf-8').strip('\n').split('\n'))
 
     all_required_versions = set()
     [all_required_versions.update(v) for v in all_versions.values()]
@@ -32,7 +31,8 @@ def install_all_uninstalled_versions():
     uninstalled_versions = all_required_versions - installed_versions
 
     for version in uninstalled_versions:
-        subprocess.run(f'rvm install {version}', shell=True)
+        print(f'installing version {version}')
+        subprocess.run(f'rvm install {version}' shell=True)
 
 def main():
     install_all_uninstalled_versions()
@@ -42,18 +42,21 @@ def main():
 
     for interpreter_type, versions in all_versions.items():
         for version in versions:
+            print(f'switching to use version {version}')
             subprocess.run(f'rvm use {version}', shell=True)
 
             fpses = []
             for i in range(5):
 
                 benchmark_command = command(interpreter_type)
+                print(f'running result {i}')
                 result = subprocess.run(benchmark_command, capture_output=True, shell=True)
 
-                fps, checksum = result.strip('\n').split('\n')
+                fps, checksum = result.stdout.decode('utf-8').strip('\n').split('\n')
                 fpses.append(fps)
 
-            with open(os.path.join('..', RESULTS), 'w+') as f
+            print(f'Writing results back to file')
+            with open(os.path.join('..', RESULTS), 'w+') as f:
                 f.write(','.join([interpreter_type, version, *[fpses]]))
 
     subprocess.run('cd ..')
