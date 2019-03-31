@@ -32,7 +32,7 @@ def install_all_uninstalled_versions():
 
     for version in uninstalled_versions:
         print(f'installing version {version}')
-        subprocess.run(f'rvm install {version}' shell=True)
+        subprocess.run(f'rvm install {version}', shell=True)
 
 def main():
     install_all_uninstalled_versions()
