@@ -84,19 +84,21 @@ def run_jruby_specifically():
             capture_output=True).stdout.decode('utf-8').strip('\n').split('\n')
 
     # jruby < 1.7 cannot run the benchmark
-    jrubies = [version for version in jrubies
-            if 'jruby-9.1' in version or 'jruby-9.2' in version]
+    # jrubies = [version for version in jrubies
+    #        if 'jruby-9.1' in version or 'jruby-9.2' in version]
 
     versions = {}
     for jruby_version in jrubies:
         versions[jruby_version] = []
+
 
     for i in range(5):
         print(f'running {i}')
 
         jrubies_results = subprocess.run(
                 f'rvm {",".join(jrubies)} do '\
-                'bin/optcarrot --benchmark examples/Lan_Master.nes',
+                'ruby -r ./tools/shim.rb -Ilib bin/optcarrot '\
+                '--benchmark examples/Lan_Master.nes',
                 shell=True, capture_output=True)\
                 .stdout.decode('utf-8').strip('\n').split('\n')
 
@@ -108,7 +110,7 @@ def run_jruby_specifically():
 
     os.chdir('..')
 
-    with open('jruby_results.csv', 'w+') as f:
+    with open('jruby_results2.csv', 'w+') as f:
         for version, fps in versions.items():
             f.write(f'jruby,{version},{",".join(fps)}\n')
 
