@@ -3,11 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from operator import itemgetter
 
-NOVERSION = -1
+NOVERSION = None
 NOJUMP = -10
 crubyMeans = []
 crubyStdDevs = []
 crubyVersions = []
+crubyVersionsLine = []
+crubyVersionsLineX = []
 crubyJumps = []
 sortedCrubyJumps = []
 jrubyMeans = []
@@ -16,24 +18,23 @@ jrubyVersions = []
 jrubyJumps = []
 sortedJrubyJumps = []
 
-for i in ['results.csv', 'jruby_results2.csv']:
+for i in ['results.csv', 'jruby_results3.csv']:
 
 	with open(i) as f:
 
 		reader = csv.reader(f, delimiter=',')
 
-		if i == 'jruby_results2.csv' :
+		if i == 'jruby_results3.csv' :
 			#try:
 			#	reader = sorted(reader, key = lambda s: list(map(int, str(s[1])[6:].split('.'))))
 			#except ValueError:
 			#	print("x")
 			#	reader = sorted(reader, key = lambda s: list(map(int, str(s[1])[6:].split('.'))))
 			reader = sorted(reader, key = lambda s: list(map(int, ((str((s[1].split('-'))[1])).split('.'))[:3])))
-
-			for i in reader:
-				print(i)
-
+		
+		ind = 0
 		for row in reader:
+			ind+=1
 			if len(row) == 7:
 				times = []
 				for i in range(2, 7):
@@ -45,6 +46,8 @@ for i in ['results.csv', 'jruby_results2.csv']:
 					crubyMeans.append(np.mean(times))
 					crubyStdDevs.append(np.std(times))
 					crubyVersions.append(row[1])
+					crubyVersionsLine.append(np.mean(times))
+					crubyVersionsLineX.append(ind)
 				else:
 					jrubyMeans.append(np.mean(times))
 					jrubyStdDevs.append(np.std(times))
@@ -54,7 +57,7 @@ for i in ['results.csv', 'jruby_results2.csv']:
 				if row[0] == "cruby":
 					crubyMeans.append(NOVERSION)
 					crubyStdDevs.append(NOVERSION)
-					crubyVersions.append("x")
+					crubyVersions.append(row[1])
 				else:
 					jrubyMeans.append(NOVERSION)
 					jrubyStdDevs.append(NOVERSION)
@@ -77,6 +80,21 @@ for i in range(0, 10) :
 	jumpVal = sortedCrubyJumps[i]
 	print(jumpVal, end=', ')
 	print(crubyVersions[crubyJumps.index(jumpVal)])
+
+
+#Linear INterpolation
+#xValsCruby = []
+
+#for i in range(0, len(crubyVersions)) :
+#	xValsCruby.append(i)
+m, b = np.polyfit(crubyVersionsLineX, crubyVersionsLine, 1)
+
+crubyLine = []
+
+for i in crubyVersionsLineX :
+	crubyLine.append(m*i + b)
+
+
 
 ##jRuby
 
@@ -106,6 +124,7 @@ crubyX = [int(i)*CST for i in np.arange(0, len(crubyVersions)/CST)]
 crubyVersionsPlot = itemgetter(*crubyX)(crubyVersions)
 
 plt.plot(crubyMeans, 'ro')
+plt.plot(crubyVersionsLineX, crubyLine)
 plt.xticks(rotation=90)
 plt.xticks(crubyX, crubyVersionsPlot)
 plt.savefig("figRubyMeans.png")
