@@ -2,11 +2,11 @@ import subprocess
 import os
 
 FILES = {
-#    'cruby': 'ruby.versions',
-    'jruby': 'jruby.versions',
+    'cruby': 'ruby.versions',
+#    'jruby': 'jruby.versions',
 }
 
-RESULTS = 'results.csv'
+RESULTS = 'cruby_results2.csv'
 
 all_versions = {}
 for interpreter, file_name in FILES.items():
@@ -17,7 +17,7 @@ for interpreter, file_name in FILES.items():
 
 def command(interpreter_type):
     if interpreter_type == 'cruby':
-        return 'bin/optcarrot --benchmark examples/Lan_Master.nes'
+        return 'ruby bin/optcarrot --benchmark examples/Lan_Master.nes'
     if interpreter_type == 'jruby':
         return '-r ./tools/shim.rb -Ilib bin/optcarrot --benchmark examples/Lan_Master.nes'
 
@@ -45,24 +45,13 @@ def main():
 
         for version in versions:
 
-            if interpreter_type == 'jruby':
-                # subprocess.run(['/bin/bash', '--login'], shell=True)
-                subprocess.run(f'rvm use {version}', shell=True)
-
             fpses = []
             for i in range(5):
-
                 benchmark_command = command(interpreter_type)
-                print(f'running result {i}')
 
-                if interpreter_type == 'cruby':
-                    result = subprocess.run(f'rvm {version} do {benchmark_command}',
-                            capture_output=True,
-                            shell=True)
-                else:
-                    result = subprocess.run(f'ruby {benchmark_command}',
-                            capture_output=True,
-                            shell=True)
+                result = subprocess.run(f'rvm {version} do {benchmark_command}',
+                        capture_output=True,
+                        shell=True)
 
                 if result.stderr:
                     continue
@@ -73,7 +62,7 @@ def main():
 
                 fpses.append(fps)
 
-            print(f'Writing results back to file')
+            print(f'Writing results back to file for {version}')
             with open(os.path.join('..', RESULTS), 'a') as f:
                 f.write(','.join([interpreter_type, version, *fpses]) + '\n')
 
@@ -116,6 +105,6 @@ def run_jruby_specifically():
 
 
 if __name__ == '__main__':
-    # main()
+    main()
 
-    run_jruby_specifically()
+    # run_jruby_specifically()
