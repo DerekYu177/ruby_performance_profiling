@@ -4,13 +4,19 @@ import matplotlib.pyplot as plt
 from operator import itemgetter
 
 with open('results.csv') as f:
+	NOVERSION = -1
+	NOJUMP = -10
 	reader = csv.reader(f, delimiter=',')
 	crubyMeans = []
 	crubyStdDevs = []
 	crubyVersions = []
+	crubyJumps = []
+	sortedCrubyJumps = []
 	jrubyMeans = []
 	jrubyStdDevs = []
 	jrubyVersions = []
+	jrubyJumps = []
+	sortedJrubyJumps = []
 	for row in reader:
 		if len(row) == 7:
 			times = []
@@ -30,13 +36,52 @@ with open('results.csv') as f:
 			times.clear
 		else:
 			if row[0] == "cruby":
-				crubyMeans.append(-1)
-				crubyStdDevs.append(-1)
+				crubyMeans.append(NOVERSION)
+				crubyStdDevs.append(NOVERSION)
 				crubyVersions.append("x")
 			else:
-				jrubyMeans.append(-1)
-				jrubyStdDevs.append(-1)
+				jrubyMeans.append(NOVERSION)
+				jrubyStdDevs.append(NOVERSION)
 				jrubyVersions.append("x")
+	##cRuby
+
+	#Get Jump Values
+	crubyJumps.append(NOJUMP)
+	for i in range(1, len(crubyMeans)) :
+		if (crubyMeans[i] != NOVERSION and crubyMeans[i-1] != NOVERSION) :
+			crubyJumps.append(crubyMeans[i] - crubyMeans[i-1])
+		else : 
+			crubyJumps.append(NOJUMP)
+
+	#Finding max jump versions
+	print("cRuby:")
+	sortedCrubyJumps = crubyJumps.copy()
+	sortedCrubyJumps.sort(reverse = True)
+	for i in range(0, 10) :
+		jumpVal = sortedCrubyJumps[i]
+		print(jumpVal, end=', ')
+		print(crubyVersions[crubyJumps.index(jumpVal)])
+
+	##jRuby
+
+	#Get Jump Values
+	jrubyJumps.append(NOJUMP)
+	for i in range(1, len(jrubyMeans)) :
+		if (jrubyMeans[i] != NOVERSION and jrubyMeans[i-1] != NOVERSION) :
+			jrubyJumps.append(jrubyMeans[i] - jrubyMeans[i-1])
+		else : 
+			jrubyJumps.append(NOJUMP)
+
+	#Finding max jump versions
+	print("jRuby:")
+	sortedJrubyJumps = jrubyJumps.copy()
+	sortedJrubyJumps.sort(reverse = True)
+	for i in range(0, 10) :
+		jumpVal = sortedJrubyJumps[i]
+		print(jumpVal, end=', ')
+		print(jrubyVersions[jrubyJumps.index(jumpVal)])
+
+
 
 	#All manipulations done
 	CST=4
@@ -56,6 +101,12 @@ with open('results.csv') as f:
 	plt.savefig("figRubyStdDevs.png")
 	plt.clf()
 
+	plt.plot(crubyJumps, 'ro')
+	plt.xticks(rotation=90)
+	plt.xticks(crubyX, crubyVersionsPlot)
+	plt.savefig("figRubyJumps.png")
+	plt.clf()
+
 	jrubyX = [int(i)*CST for i in np.arange(0, len(jrubyVersions)/CST)]
 	jrubyVersionsPlot = itemgetter(*jrubyX)(jrubyVersions)
 
@@ -69,5 +120,11 @@ with open('results.csv') as f:
 	plt.xticks(rotation=90)
 	plt.xticks(jrubyX, jrubyVersionsPlot)
 	plt.savefig("figJrubyStdDevs.png")
+	plt.clf()
+
+	plt.plot(jrubyJumps, 'ro')
+	plt.xticks(rotation=90)
+	plt.xticks(jrubyX, jrubyVersionsPlot)
+	plt.savefig("figJrubyJumps.png")
 	plt.clf()
 	
