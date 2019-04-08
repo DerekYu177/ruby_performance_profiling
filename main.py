@@ -110,7 +110,7 @@ def run_jruby_specifically():
 
     os.chdir('..')
 
-    with open('jruby_results2.csv', 'w+') as f:
+    with open('jruby_results3.csv', 'w+') as f:
         for version, fps in versions.items():
             f.write(f'jruby,{version},{",".join(fps)}\n')
 
