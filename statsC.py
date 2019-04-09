@@ -5,7 +5,7 @@ from operator import itemgetter
 
 NOVERSION = None
 NOJUMP = -10
-TRIPLEPERFO = 60
+TRIPLEPERFO = 18.69 * 3
 crubyMeans = []
 crubyStdDevs = []
 crubyVersions = []
@@ -25,7 +25,7 @@ jrubyVersions = []
 jrubyJumps = []
 sortedJrubyJumps = []
 
-for file in ['cruby_results2_date.csv', 'jruby_results_flags2.csv']:
+for file in ['cruby_results2.csv', 'jruby_results_flags2.csv']:
 
 	with open(file) as f:
 
@@ -75,6 +75,11 @@ for file in ['cruby_results2_date.csv', 'jruby_results_flags2.csv']:
 							newLineV.append(row[1])
 					else :
 						crubyVersionsLineX.append(ind)
+						if int(row[1][7]) > 2 or (int(row[1][7]) == 2 and int(row[1][9]) >= 6) or (int(row[1][7]) == 2 and len(row[1]) == 11) :
+							newLineX.append(ind-1)
+							newLine.append(np.mean(times))
+							newLineV.append(row[1])
+
 				else:
 					jrubyMeans.append(np.mean(times))
 					jrubyStdDevs.append(np.std(times))
@@ -91,11 +96,6 @@ for file in ['cruby_results2_date.csv', 'jruby_results_flags2.csv']:
 					jrubyMeans.append(NOVERSION)
 					jrubyStdDevs.append(NOVERSION)
 					jrubyVersions.append("x")
-##cRuby
-
-#print(newLineX)
-#print(newLine)
-#print(newLineV)
 
 #Get Jump Values
 crubyJumps.append(NOJUMP)
@@ -124,7 +124,7 @@ for i in range(0, 10) :
 #	xValsCruby.append(i)
 
 #true if dates
-if True :
+if False :
 	m, b = np.polyfit(newLineX, newLine, 1)
 else:
 	m, b = np.polyfit(crubyVersionsLineX, crubyVersionsLine, 1)
@@ -136,34 +136,14 @@ for i in crubyVersionsLineX :
 
 #When to reach triple performance?
 
-#goalVersion = (TRIPLEPERFO-b)/m
-goalVersion = (2*b)/m
+
+
+goalVersion = (73.05055-b)/m
+#goalVersion = (2*b)/m
 print("formula is y={}x + {}".format(m, b))
 print("We wil reach 3x3 goal at version {}.".format(goalVersion))
 print("This is in {} versions.".format(goalVersion-crubyVersionsLineX[len(crubyVersionsLineX)-1]))
 print()
-
-
-##jRuby
-
-#Get Jump Values
-jrubyJumps.append(NOJUMP)
-for i in range(1, len(jrubyMeans)) :
-	if (jrubyMeans[i] != NOVERSION and jrubyMeans[i-1] != NOVERSION) :
-		jrubyJumps.append(jrubyMeans[i] - jrubyMeans[i-1])
-	else : 
-		jrubyJumps.append(NOJUMP)
-
-#Finding max jump versions
-print("jRuby:")
-sortedJrubyJumps = jrubyJumps.copy()
-sortedJrubyJumps.sort(reverse = True)
-for i in range(0, 10) :
-	jumpVal = sortedJrubyJumps[i]
-	print(jumpVal, end=', ')
-	print(jrubyVersions[jrubyJumps.index(jumpVal)])
-
-
 
 #All manipulations done
 CST=6
@@ -174,18 +154,22 @@ crubyVersionsPlot = (itemgetter(*crubyX)(crubyVersions))
 allXs = [i for i in range(2131)]
 
 plt.figure(figsize=(10, 7.6))
-plt.plot(crubyVersionsX, crubyMeans, 'ro', markersize=12)
-plt.plot(newLineX, newLine, 'go', markersize=12)
+plt.plot(crubyMeans, 'ro', markersize=12) #NODATE
+#plt.plot(crubyVersionsX, crubyMeans, 'ro', markersize=12) #DATE
+#plt.plot(newLineX, newLine, 'go', markersize=12, markeredgewidth=2, markeredgecolor='g') #MAYBE
 plt.plot(crubyVersionsLineX, crubyLine, linewidth=6, alpha=0)
 plt.yticks(fontsize=17)
 plt.xticks(fontsize=17)
-#plt.xticks(rotation=45, ha='right', fontsize=17)
-#plt.xticks(crubyX, crubyVersionsPlot)
-plt.xlabel("Time Since Original Version (days)", fontsize=24)
+plt.xticks(rotation=45, ha='right', fontsize=17) #NODATE
+plt.xticks(crubyX, crubyVersionsPlot) #NODATE
+#plt.xlabel("Time Since Original Version (days)", fontsize=24) #DATE
+plt.xlabel("cRuby Versions", fontsize=24) #NODATE
 plt.ylabel("Measured Result (fps)", fontsize=24)
 #plt.title()
+plt.ylim(bottom=21)
 plt.tight_layout()
 plt.savefig("figRubyMeans.png")
+plt.show()
 plt.clf()
 
 plt.plot(crubyStdDevs, 'ro')
@@ -207,7 +191,6 @@ plt.plot(jrubyMeans, 'ro')
 plt.xticks(rotation=30)
 plt.xticks(jrubyX, jrubyVersionsPlot)
 plt.savefig("figJrubyMeans.png")
-plt.show()
 plt.clf()
 
 plt.plot(jrubyStdDevs, 'ro')
