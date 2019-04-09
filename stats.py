@@ -46,7 +46,7 @@ for i in ['results.csv', 'jruby_results_flags.csv']:
 				if row[0] == "cruby":
 					crubyMeans.append(np.mean(times))
 					crubyStdDevs.append(np.std(times))
-					crubyVersions.append(row[1])
+					crubyVersions.append(row[1][5:])
 					crubyVersionsLine.append(np.mean(times))
 					crubyVersionsLineX.append(ind)
 				else:
@@ -58,7 +58,7 @@ for i in ['results.csv', 'jruby_results_flags.csv']:
 				if row[0] == "cruby":
 					crubyMeans.append(NOVERSION)
 					crubyStdDevs.append(NOVERSION)
-					crubyVersions.append(row[1])
+					crubyVersions.append(row[1][5:])
 				else:
 					jrubyMeans.append(NOVERSION)
 					jrubyStdDevs.append(NOVERSION)
@@ -97,10 +97,11 @@ for i in crubyVersionsLineX :
 
 #When to reach triple performance?
 
-goalVersion = (TRIPLEPERFO-b)/m
+#goalVersion = (TRIPLEPERFO-b)/m
 goalVersion = (2*b)/m
+print("formula is y={}x + {}".format(m, b))
 print("We wil reach 3x3 goal at version {}.".format(goalVersion))
-print("This is in {} versions.".format(goalVersion-len(crubyLine)))
+print("This is in {} versions.".format(goalVersion-crubyVersionsLineX[len(crubyVersionsLineX)-1]))
 print()
 
 
@@ -126,16 +127,23 @@ for i in range(0, 10) :
 
 
 #All manipulations done
-CST=4
+CST=6
 
 crubyX = [int(i)*CST for i in np.arange(0, len(crubyVersions)/CST)]
-crubyVersionsPlot = itemgetter(*crubyX)(crubyVersions)
+crubyVersionsPlot = (itemgetter(*crubyX)(crubyVersions))
 
-plt.plot(crubyMeans, 'ro')
-plt.plot(crubyVersionsLineX, crubyLine)
-plt.xticks(rotation=90)
+plt.figure(figsize=(10, 7.6))
+plt.plot(crubyMeans, 'ro', markersize=12)
+plt.plot(crubyVersionsLineX, crubyLine, linewidth=6)
+plt.yticks(fontsize=17)
+plt.xticks(rotation=45, ha='right', fontsize=17)
 plt.xticks(crubyX, crubyVersionsPlot)
+plt.xlabel("cRuby Versions", fontsize=24)
+plt.ylabel("Measured Result (fps)", fontsize=24)
+#plt.title()
+plt.tight_layout()
 plt.savefig("figRubyMeans.png")
+plt.show()
 plt.clf()
 
 plt.plot(crubyStdDevs, 'ro')
