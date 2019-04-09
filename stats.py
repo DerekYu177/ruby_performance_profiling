@@ -5,6 +5,7 @@ from operator import itemgetter
 
 NOVERSION = None
 NOJUMP = -10
+TRIPLEPERFO = 60
 crubyMeans = []
 crubyStdDevs = []
 crubyVersions = []
@@ -18,13 +19,13 @@ jrubyVersions = []
 jrubyJumps = []
 sortedJrubyJumps = []
 
-for i in ['results.csv', 'jruby_results3.csv']:
+for i in ['results.csv', 'jruby_results_flags.csv']:
 
 	with open(i) as f:
 
 		reader = csv.reader(f, delimiter=',')
 
-		if i == 'jruby_results3.csv' :
+		if i == 'jruby_results_flags.csv' :
 			#try:
 			#	reader = sorted(reader, key = lambda s: list(map(int, str(s[1])[6:].split('.'))))
 			#except ValueError:
@@ -94,6 +95,13 @@ crubyLine = []
 for i in crubyVersionsLineX :
 	crubyLine.append(m*i + b)
 
+#When to reach triple performance?
+
+goalVersion = (TRIPLEPERFO-b)/m
+goalVersion = (2*b)/m
+print("We wil reach 3x3 goal at version {}.".format(goalVersion))
+print("This is in {} versions.".format(goalVersion-len(crubyLine)))
+print()
 
 
 ##jRuby
