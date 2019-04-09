@@ -1,8 +1,11 @@
 import datetime
 
-INPUT_FILE = 'cruby_results2.csv'
-DATE_FILE = 'cruby_release_dates.txt'
-OUTPUT_FILE = 'cruby_results2_date.csv'
+# ruby-2.0.0-p195
+EARLIEST_DATE = datetime.date(2013, 5, 14)
+
+INPUT_FILE = 'jruby_results3.csv'
+DATE_FILE = 'jruby_release_dates.txt'
+OUTPUT_FILE = 'jruby_results3_date.csv'
 
 def raw_data():
     with open(INPUT_FILE, 'r') as f:
@@ -19,25 +22,17 @@ def mapping():
 
     version_to_date = {}
     for row in mapping:
-        version, date = row.split('\t')
-        year, month, day = date.split('-')
+        version, date = row.split(',')
+        month, day, year = date.split('-')
         date = datetime.date(
             year=int(year),
             month=int(month),
             day=int(day))
 
         # the version is of the form
-        # Ruby 2.0.0-p594
+        # 1.7.9
 
-        ruby, semver = version.split(' ')
-
-        # if semver[0] == '1': # version 1.Y.Z, DC
-        #     continue
-
-        # if semver.split('.')[1] == '0': # 2.0.Y, DC
-        #     continue
-
-        version_to_date.update({semver: date})
+        version_to_date.update({version: date})
 
     return version_to_date
 
@@ -46,8 +41,8 @@ data = raw_data()
 
 date_row = []
 for row in data:
-    cruby, version, *other = row.split(',')
-    semver = version[5:]
+    jruby, version, *other = row.split(',')
+    semver = version[6:]
 
     if semver not in version_to_date:
         print(f'Version {semver} has unknown release date!')
@@ -57,13 +52,12 @@ for row in data:
     date_row.append((version_date, row))
 
 date_row.sort()
-earliest = date_row[0][0]
 
 transformed_data = []
 for row in date_row:
-    days_since = (row[0] - earliest).days
-    cruby, version, *other = row[1].split(',')
-    transformed_row = [cruby, version, str(days_since), *other]
+    days_since = (row[0] - EARLIEST_DATE).days
+    jruby, version, *other = row[1].split(',')
+    transformed_row = [jruby, version, str(days_since), *other]
     transformed_data.append(transformed_row)
 
 print(date_row[0])
