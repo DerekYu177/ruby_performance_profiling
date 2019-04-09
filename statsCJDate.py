@@ -33,7 +33,7 @@ jrubyVersions = []
 jrubyJumps = []
 sortedJrubyJumps = []
 
-for file in ['jruby_results3_date.csv', 'jruby_results_flags2_date.csv']:
+for file in ['cruby_results2_date.csv', 'jruby_results_flags2_date.csv']:
 
 	with open(file) as f:
 
@@ -54,40 +54,20 @@ for file in ['jruby_results3_date.csv', 'jruby_results_flags2_date.csv']:
 					times.append(float(timeString))
 
 				#Basic stats calculation
-				if file == 'jruby_results3_date.csv':
-					crubyMeans.append(np.mean(times))
-					crubyVersions.append(row[1][5:])
-					
+				if file == 'cruby_results2_date.csv':
+				
 					crubyVersionsLine.append(np.mean(times))
-					crubyVersionsLineX.append(int(row[2])-144)
-
-					crubyVersionsX.append(int(row[2]))
-
+					crubyVersionsLineX.append(int(row[2]))
+					if int(row[1][7]) >= localMaxVersion:
+							localMaxVersion = int(row[1][7])
+							newLineX.append(int(row[2]))
+							newLine.append(np.mean(times))
 
 				else:
-					jrubyVersionsLine.append(np.mean(times))
-					jrubyVersionsLineX.append(int(row[2])-144)
+					if np.mean(times) > 24 :
+						jrubyVersionsLine.append(np.mean(times))
+						jrubyVersionsLineX.append(int(row[2]))
 				times.clear
-
-#Get Jump Values
-crubyJumps.append(NOJUMP)
-for i in range(1, len(crubyMeans)) :
-	if (crubyMeans[i] != NOVERSION and crubyMeans[i-1] != NOVERSION) :
-		crubyJumps.append(crubyMeans[i] - crubyMeans[i-1])
-		#if crubyMeans[i] < crubyMeans[i-1] :
-			#print("Version {}, value: {}".format(crubyVersions[len(crubyJumps)-1], crubyMeans[i] - crubyMeans[i-1]))
-	else : 
-		crubyJumps.append(NOJUMP)
-
-#Finding max jump versions
-print("cRuby:")
-sortedCrubyJumps = crubyJumps.copy()
-sortedCrubyJumps.sort()
-for i in range(0, 10) :
-	jumpVal = sortedCrubyJumps[i]
-	print(jumpVal, end=', ')
-	print(crubyVersions[crubyJumps.index(jumpVal)])
-
 
 #Linear INterpolation
 #xValsCruby = []
@@ -96,44 +76,35 @@ for i in range(0, 10) :
 #	xValsCruby.append(i)
 
 #true if dates
-if False :
-	m, b = np.polyfit(newLineX, newLine, 1)
-else:
-	m, b = np.polyfit(crubyVersionsLineX, crubyVersionsLine, 1)
+
+mc, bc = np.polyfit(crubyVersionsLineX, crubyVersionsLine, 1)
+mj, bj = np.polyfit(jrubyVersionsLineX, jrubyVersionsLine, 1)
+mnew, bnew = np.polyfit(newLineX, newLine, 1)
 
 crubyLine = []
+jrubyLine = []
+newRubyLine = []
 
 for i in crubyVersionsLineX :
-	crubyLine.append(m*i + b)
+	crubyLine.append(mc*i + bc)
 
-#When to reach triple performance?
+for i in jrubyVersionsLineX :
+	jrubyLine.append(mj*i + bj)
 
-
-
-goalVersion = (73.05055-b)/m
-#goalVersion = (2*b)/m
-print("formula is y={}x + {}".format(m, b))
-print("We wil reach 3x3 goal at version {}.".format(goalVersion))
-print("This is in {} versions.".format(goalVersion-crubyVersionsLineX[len(crubyVersionsLineX)-1]))
-print()
-
-#All manipulations done
-CST=6
-
-crubyX = [int(i)*CST for i in np.arange(0, len(crubyVersions)/CST)]
-crubyVersionsPlot = (itemgetter(*crubyX)(crubyVersions))
-
-allXs = [i for i in range(2131)]
-
-
+for i in newLineX :
+	newRubyLine.append(mnew*i + bnew)
 
 #print(jrubyVersionsLine)
 
 plt.figure(figsize=(10, 7.6))
 #plt.plot(crubyMeans, 'ro', markersize=12) #NODATE
-plt.plot(crubyVersionsLineX, crubyVersionsLine, 'ro', markersize=12, alpha = 0.5)
-plt.plot(jrubyVersionsLineX, jrubyVersionsLine, 'bo', markersize=12, alpha = 0.5)
-#plt.plot(crubyVersionsLineX, crubyLine, linewidth=6, alpha=0)
+plt.plot(crubyVersionsLineX, crubyVersionsLine, 'ro', markersize=15, alpha = 0.15)
+plt.plot(newLineX, newLine, 'ro', markersize=15, markeredgewidth = 2, markeredgecolor = "k", alpha = 1)
+plt.plot(jrubyVersionsLineX, jrubyVersionsLine, 'bo', markeredgewidth = 2, markeredgecolor = "k", markersize=15, alpha = 1)
+#plt.plot(jrubyVersionsLineX, jrubyLine, linewidth=7)
+#plt.plot(newLineX, newRubyLine, linewidth=7)
+
+
 plt.yticks(fontsize=17)
 plt.xticks(fontsize=17)
 #plt.xticks(rotation=45, ha='right', fontsize=17) #NODATE
@@ -142,7 +113,7 @@ plt.xlabel("Time Since Original Version (days)", fontsize=24) #DATE
 #plt.xlabel("cRuby Versions", fontsize=24) #NODATE
 plt.ylabel("Measured Result (fps)", fontsize=24)
 #plt.title()
-plt.ylim(top=36)
+plt.ylim(bottom=21)
 plt.tight_layout()
 plt.savefig("figRubyMeans.png")
 plt.show()
