@@ -131,9 +131,9 @@ allXs = [i for i in range(2131)]
 
 plt.figure(figsize=(10, 7.6))
 #plt.plot(crubyMeans, 'ro', markersize=12) #NODATE
-#plt.plot(crubyVersionsLineX, crubyVersionsLine, 'ro', markersize=12, alpha = 0.5)
-plt.plot(jrubyVersionsLineX, jrubyVersionsLine, 'bo', markersize=12)
-#plt.plot(crubyVersionsLineX, crubyLine, linewidth=6, alpha=0)
+plt.plot(crubyVersionsLineX, crubyVersionsLine, 'ro', markersize=12, alpha = 1)
+#plt.plot(jrubyVersionsLineX, jrubyVersionsLine, 'bo', markersize=12)
+plt.plot(crubyVersionsLineX, crubyLine, linewidth=6, alpha=1)
 plt.yticks(fontsize=17)
 plt.xticks(fontsize=17)
 #plt.xticks(rotation=45, ha='right', fontsize=17) #NODATE
