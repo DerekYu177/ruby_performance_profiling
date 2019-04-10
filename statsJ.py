@@ -17,7 +17,7 @@ crubyJumps = []
 
 newLineX = []
 newLine = []
-newLineV = []
+newLineVals = []
 
 belowThresh = []
 aboveThresh = []
@@ -53,6 +53,8 @@ for file in ['jruby_results3.csv', 'jruby_results_flags2.csv']:
 					crubyMeans.append(np.mean(times))
 					crubyStdDevs.append(np.std(times))
 					crubyVersions.append(row[1][6:])
+					newLine.append(np.mean(times))
+					newLineX.append(ind-1)
 				else:
 					#withFlags
 					jrubyMeans.append(np.mean(times))
@@ -85,6 +87,13 @@ print("Versions above Threshold of {}:".format(THRESHOLD))
 for i in aboveThresh :
 	print(i)
 
+m, b = np.polyfit(newLineX, newLine, 1)
+
+print(m)
+
+for i in newLineX :
+	newLineVals.append(m*i + b)
+
 
 #Get Jump Values
 #jrubyJumps.append(NOJUMP)
@@ -115,7 +124,8 @@ allXs = [i for i in range(2131)]
 
 plt.figure(figsize=(10, 7.6))
 plt.plot(crubyVersions, crubyMeans, 'ro', markersize=12, alpha = 0.5)
-plt.plot(jrubyVersions, jrubyMeans, 'bo', markersize=12, alpha = 0.5)
+#plt.plot(jrubyVersions, jrubyMeans, 'bo', markersize=12, alpha = 0.5)
+plt.plot(newLineX, newLineVals, linewidth=7)
 plt.yticks(fontsize=17)
 plt.xticks(fontsize=17)
 plt.xticks(rotation=45, ha='right', fontsize=17)
