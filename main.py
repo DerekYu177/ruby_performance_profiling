@@ -86,7 +86,7 @@ def run_jruby_specifically():
 
         jrubies_results = subprocess.run(
                 f'rvm {",".join(jrubies)} do '\
-                'ruby -r -Xcompile.invokedynamic -Xfixnum.cache=false ./tools/shim.rb -Ilib bin/optcarrot '\
+                'ruby -r -Xcompile.invokedynamic=true -Xfixnum.cache=false ./tools/shim.rb -Ilib bin/optcarrot '\
                 '--benchmark examples/Lan_Master.nes',
                 shell=True, capture_output=True)\
                 .stdout.decode('utf-8').strip('\n').split('\n')
@@ -99,7 +99,7 @@ def run_jruby_specifically():
 
     os.chdir('..')
 
-    with open('jruby_results_flags2.csv', 'w+') as f:
+    with open('jruby_results_flags3.csv', 'w+') as f:
         for version, fps in versions.items():
             f.write(f'jruby,{version},{",".join(fps)}\n')
 
