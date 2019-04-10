@@ -27,10 +27,19 @@ jrubyMeans = []
 jrubyStdDevs = []
 jrubyVersions = []
 jrubyJumps = []
+
+j3rubyMeans = []
+j3rubyStdDevs = []
+j3rubyVersions = []
+j3rubyJumps = []
+
+below3Thresh = []
+above3Thresh = []
+
 sortedJrubyJumps = []
 
 
-for file in ['jruby_results3.csv', 'jruby_results_flags3.csv']:
+for file in ['jruby_results_flags2.csv', 'jruby_results_flags3.csv', 'jruby_results3.csv']:
 
 	with open(file) as f:
 
@@ -55,7 +64,7 @@ for file in ['jruby_results3.csv', 'jruby_results_flags3.csv']:
 					crubyVersions.append(row[1][6:])
 					newLine.append(np.mean(times))
 					newLineX.append(ind-1)
-				else:
+				if file == 'jruby_results_flags2.csv':
 					#withFlags
 					jrubyMeans.append(np.mean(times))
 					jrubyStdDevs.append(np.std(times))
@@ -64,16 +73,30 @@ for file in ['jruby_results3.csv', 'jruby_results_flags3.csv']:
 						aboveThresh.append(row[1])
 					else :
 						belowThresh.append(row[1])
+
+				if file == 'jruby_results_flags3.csv':
+					#withFlags
+					j3rubyMeans.append(np.mean(times))
+					j3rubyStdDevs.append(np.std(times))
+					j3rubyVersions.append(row[1][6:])
+					if np.mean(times) > THRESHOLD :
+						above3Thresh.append(row[1])
+					else :
+						below3Thresh.append(row[1])
 				times.clear
 			else:
 				if file == 'jruby_results3.csv':
 					crubyMeans.append(NOVERSION)
 					crubyStdDevs.append(NOVERSION)
 					crubyVersions.append(row[1][6:])
-				else:
+				if file == 'jruby_results_flags2.csv':
 					jrubyMeans.append(NOVERSION)
 					jrubyStdDevs.append(NOVERSION)
 					jrubyVersions.append(row[1][6:])
+				if file == 'jruby_results_flags3.csv':
+					j3rubyMeans.append(NOVERSION)
+					j3rubyStdDevs.append(NOVERSION)
+					j3rubyVersions.append(row[1][6:])
 
 ##jRuby
 
@@ -123,8 +146,9 @@ crubyVersionsPlot = (itemgetter(*crubyX)(crubyVersions))
 allXs = [i for i in range(2131)]
 
 plt.figure(figsize=(10, 7.6))
-plt.plot(crubyVersions, crubyMeans, 'ro', markersize=12)
+plt.plot(crubyVersions, crubyMeans, 'ro', markersize=12, alpha = 0.5)
 plt.plot(jrubyVersions, jrubyMeans, 'bo', markersize=12, alpha = 0.5)
+plt.plot(j3rubyVersions, j3rubyMeans, 'go', markersize=12, alpha = 0.5)
 #plt.plot(newLineX, newLineVals, linewidth=7)
 plt.yticks(fontsize=17)
 plt.xticks(fontsize=17)
@@ -134,7 +158,7 @@ plt.xlabel("jRuby Versions", fontsize=24)
 plt.ylabel("Performance (fps)", fontsize=24)
 #plt.title()
 plt.tight_layout()
-plt.ylim(top=36)
+#plt.ylim(top=36)
 plt.savefig("figRubyMeans.png")
 plt.show()
 plt.clf()
