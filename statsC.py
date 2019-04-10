@@ -164,7 +164,7 @@ plt.xticks(rotation=45, ha='right', fontsize=17) #NODATE
 plt.xticks(crubyX, crubyVersionsPlot) #NODATE
 #plt.xlabel("Time Since Original Version (days)", fontsize=24) #DATE
 plt.xlabel("cRuby Versions", fontsize=24) #NODATE
-plt.ylabel("Measured Result (fps)", fontsize=24)
+plt.ylabel("Performance (fps)", fontsize=24)
 #plt.title()
 plt.ylim(bottom=21)
 plt.tight_layout()

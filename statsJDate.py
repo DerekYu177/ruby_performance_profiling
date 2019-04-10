@@ -131,8 +131,8 @@ allXs = [i for i in range(2131)]
 
 plt.figure(figsize=(10, 7.6))
 #plt.plot(crubyMeans, 'ro', markersize=12) #NODATE
-plt.plot(crubyVersionsLineX, crubyVersionsLine, 'ro', markersize=12, alpha = 0.5)
-plt.plot(jrubyVersionsLineX, jrubyVersionsLine, 'bo', markersize=12, alpha = 0.5)
+#plt.plot(crubyVersionsLineX, crubyVersionsLine, 'ro', markersize=12, alpha = 0.5)
+plt.plot(jrubyVersionsLineX, jrubyVersionsLine, 'bo', markersize=12)
 #plt.plot(crubyVersionsLineX, crubyLine, linewidth=6, alpha=0)
 plt.yticks(fontsize=17)
 plt.xticks(fontsize=17)
@@ -140,7 +140,7 @@ plt.xticks(fontsize=17)
 #plt.xticks(crubyX, crubyVersionsPlot) #NODATE
 plt.xlabel("Time Since Original Version (days)", fontsize=24) #DATE
 #plt.xlabel("cRuby Versions", fontsize=24) #NODATE
-plt.ylabel("Measured Result (fps)", fontsize=24)
+plt.ylabel("Performance (fps)", fontsize=24)
 #plt.title()
 plt.ylim(top=36)
 plt.tight_layout()
