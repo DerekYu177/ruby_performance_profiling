@@ -156,8 +156,8 @@ allXs = [i for i in range(2131)]
 plt.figure(figsize=(10, 7.6))
 plt.plot(crubyMeans, 'ro', markersize=12) #NODATE
 #plt.plot(crubyVersionsX, crubyMeans, 'ro', markersize=12) #DATE
-plt.plot(newLineX, newLine, 'go', markersize=12, markeredgewidth=2, markeredgecolor='g',  alpha = 0.90) #MAYBE
-plt.plot(crubyVersionsLineX, crubyLine, linewidth=6, alpha=1)
+#plt.plot(newLineX, newLine, 'go', markersize=12, markeredgewidth=2, markeredgecolor='g') #MAYBE
+#plt.plot(crubyVersionsLineX, crubyLine, linewidth=6, alpha=1)
 plt.yticks(fontsize=17)
 plt.xticks(fontsize=17)
 plt.xticks(rotation=45, ha='right', fontsize=17) #NODATE

@@ -25,7 +25,7 @@ jrubyVersions = []
 jrubyJumps = []
 sortedJrubyJumps = []
 
-for file in ['cruby_results2.csv', 'jruby_results_flags2.csv']:
+for file in ['cruby_results2_date.csv', 'jruby_results_flags2.csv']:
 
 	with open(file) as f:
 
@@ -124,7 +124,7 @@ for i in range(0, 10) :
 #	xValsCruby.append(i)
 
 #true if dates
-if False :
+if True :
 	m, b = np.polyfit(newLineX, newLine, 1)
 else:
 	m, b = np.polyfit(crubyVersionsLineX, crubyVersionsLine, 1)
@@ -154,16 +154,16 @@ crubyVersionsPlot = (itemgetter(*crubyX)(crubyVersions))
 allXs = [i for i in range(2131)]
 
 plt.figure(figsize=(10, 7.6))
-plt.plot(crubyMeans, 'ro', markersize=12) #NODATE
-#plt.plot(crubyVersionsX, crubyMeans, 'ro', markersize=12) #DATE
-#plt.plot(newLineX, newLine, 'go', markersize=12, markeredgewidth=2, markeredgecolor='g') #MAYBE
+#plt.plot(crubyMeans, 'ro', markersize=12) #NODATE
+plt.plot(crubyVersionsX, crubyMeans, 'ro', markersize=12) #DATE
+plt.plot(newLineX, newLine, 'go', markersize=12, markeredgewidth=2, markeredgecolor='g') #MAYBE
 plt.plot(crubyVersionsLineX, crubyLine, linewidth=6, alpha=0)
 plt.yticks(fontsize=17)
 plt.xticks(fontsize=17)
-plt.xticks(rotation=45, ha='right', fontsize=17) #NODATE
-plt.xticks(crubyX, crubyVersionsPlot) #NODATE
-#plt.xlabel("Time Since Original Version (days)", fontsize=24) #DATE
-plt.xlabel("cRuby Versions", fontsize=24) #NODATE
+#plt.xticks(rotation=45, ha='right', fontsize=17) #NODATE
+#plt.xticks(crubyX, crubyVersionsPlot) #NODATE
+plt.xlabel("Time Since Original Version (days)", fontsize=24) #DATE
+#plt.xlabel("cRuby Versions", fontsize=24) #NODATE
 plt.ylabel("Performance (fps)", fontsize=24)
 #plt.title()
 plt.ylim(bottom=21)
